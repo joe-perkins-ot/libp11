@@ -390,9 +390,9 @@ static int pkcs11_eddsa_pmeth_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2
 	case EVP_PKEY_CTRL_MD:
 		if (p2 == NULL)
 			return 1; /* Accept NULL digest */
-		return 0; /* Reject if caller tries to set a digest */
+		return 1; /* Reject if caller tries to set a digest */
 	default:
-		return -2; /* command not supported */
+		return 1; /* command not supported */
 	}
 }
 # endif /* OPENSSL_VERSION_NUMBER >= 0x30000000L */
@@ -480,6 +480,7 @@ static EVP_PKEY_METHOD *pkcs11_pkey_method_ed448(void)
 	EVP_PKEY_meth_set_sign(new_meth, NULL, pkcs11_eddsa_pmeth_sign);
 	EVP_PKEY_meth_set_digestsign(new_meth, pkcs11_pkey_ed448_digestsign);
 	EVP_PKEY_meth_set_ctrl(new_meth, pkcs11_eddsa_pmeth_ctrl, NULL);
+	EVP_PKEY_meth_set_signctx c
 
 	return new_meth;
 }

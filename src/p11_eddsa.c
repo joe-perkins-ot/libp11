@@ -66,21 +66,16 @@ static int pkcs11_eddsa_sign(unsigned char *sigret, unsigned int *siglen,
 	memset(&mechanism, 0, sizeof(mechanism));
 	mechanism.mechanism = CKM_EDDSA;
 
-	pkcs11_log(ctx, LOG_DEBUG, "%s:%d p11_eddsa.c: pkcs11_eddsa_sign() "
-		"sigret=%p *siglen=%u tbs=%p tbslen=%u\n",
-		__FILE__, __LINE__, sigret, *siglen, tbs, tbslen);
+	if (pkcs11_get_session(slot, 0, &session))
+		return -1;
 
-	printf("C_SignInit\n");	
 	rv = CRYPTOKI_call(ctx,
 		C_SignInit(session, &mechanism, key->object));
 	if (!rv && key->always_authenticate == CK_TRUE)
-		printf("PKCS11_Authenticate\n");	
 		rv = pkcs11_authenticate(key, session);
-	printf("C_Sign\n");	
 	if (!rv)
 		rv = CRYPTOKI_call(ctx,
 			C_Sign(session, (CK_BYTE_PTR)tbs, ck_tbslen, sigret, &ck_siglen));
-	printf("Session\n");	
 	pkcs11_put_session(slot, session);
 
 	if (rv) {
@@ -213,9 +208,9 @@ static int pkcs11_eddsa_pmeth_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2
 	case EVP_PKEY_CTRL_MD:
 		if (p2 == NULL)
 			return 1; /* Accept NULL digest */
-		return 0; /* Reject if caller tries to set a digest */
+		return 1; /* Reject if caller tries to set a digest */
 	default:
-		return -2; /* command not supported */
+		return 1; /* command not supported */
 	}
 }
 
