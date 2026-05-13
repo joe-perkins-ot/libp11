@@ -66,10 +66,9 @@ static int pkcs11_eddsa_sign(unsigned char *sigret, unsigned int *siglen,
 	memset(&mechanism, 0, sizeof(mechanism));
 	mechanism.mechanism = CKM_EDDSA;
 
-	printf("mechanism = 0x%lx\n", CKM_EDDSA);
-	printf("Getting session");
-	if (pkcs11_get_session(slot, 0, &session))
-		return -1;
+	pkcs11_log(ctx, LOG_DEBUG, "%s:%d p11_eddsa.c: pkcs11_eddsa_sign() "
+		"sigret=%p *siglen=%u tbs=%p tbslen=%u\n",
+		__FILE__, __LINE__, sigret, *siglen, tbs, tbslen);
 
 	printf("C_SignInit\n");	
 	rv = CRYPTOKI_call(ctx,
@@ -112,6 +111,8 @@ static int pkcs11_eddsa_pmeth_sign(EVP_PKEY_CTX *ctx, unsigned char *sig,
 	if (!pkey)
 		return 0;
 
+	printf("C_Sign\n");	
+	
 	key = pkcs11_get_ex_data_pkey(pkey);
 	if (!key)
 		return 0;
