@@ -96,27 +96,59 @@ int pkcs11_getattr_alloc(PKCS11_CTX_private *ctx, CK_SESSION_HANDLE session,
 	return 0;
 }
 
-int pkcs11_getattr_bn(PKCS11_CTX_private *ctx, CK_SESSION_HANDLE session,
-		CK_OBJECT_HANDLE object, CK_ATTRIBUTE_TYPE type, BIGNUM **bn)
+int pkcs11_getattr_bn(PKCS11_CTX_private *ctx,
+        CK_SESSION_HANDLE session,
+        CK_OBJECT_HANDLE object,
+        CK_ATTRIBUTE_TYPE type,
+        BIGNUM **bn)
 {
-	CK_BYTE *binary;
-	size_t size;
+    CK_BYTE *binary;
+    size_t size;
+    int rv;
 
-	size = 0;
-	if (pkcs11_getattr_alloc(ctx, session, object, type, &binary, &size))
-		return -1;
-	/*
-	 * @ALON: invalid object,
-	 * not sure it will survive the ulValueLen->size_t and keep sign at all platforms
-	 */
-	if (size == (size_t)-1) {
-		CKRerr(CKR_F_PKCS11_GETATTR_BN, CKR_ATTRIBUTE_TYPE_INVALID);
-		OPENSSL_free(binary);
-		return -1;
-	}
-	*bn = BN_bin2bn(binary, (int)size, *bn);
-	OPENSSL_free(binary);
-	return *bn ? 0 : -1;
+    size = 0;
+
+    pkcs11_log(ctx, LOG_DEBUG,
+        "BN_GETATTR ENTER session=%lu object=%lu type=0x%lx bn=%p\n",
+        session, object, type, bn);
+
+    rv = pkcs11_getattr_alloc(ctx, session, object, type, &binary, &size);
+
+    pkcs11_log(ctx, LOG_DEBUG,
+        "BN_GETATTR RAW RESULT rv=%d session=%lu object=%lu type=0x%lx size=%zu ptr=%p\n",
+        rv, session, object, type, size, binary);
+
+    if (rv) {
+        pkcs11_log(ctx, LOG_DEBUG,
+            "BN_GETATTR FAIL early-return session=%lu object=%lu type=0x%lx rv=%d\n",
+            session, object, type, rv);
+        return -1;
+    }
+
+    /* IMPORTANT: detect PKCS#11-style "invalid attribute" sentinel */
+    if (size == (size_t)-1) {
+        pkcs11_log(ctx, LOG_DEBUG,
+            "BN_GETATTR CKR_ATTRIBUTE_TYPE_INVALID session=%lu object=%lu type=0x%lx\n",
+            session, object, type);
+
+        CKRerr(CKR_F_PKCS11_GETATTR_BN, CKR_ATTRIBUTE_TYPE_INVALID);
+        OPENSSL_free(binary);
+        return -1;
+    }
+
+    pkcs11_log(ctx, LOG_DEBUG,
+        "BN_GETATTR CONVERT BN_bin2bn size=%zu session=%lu object=%lu\n",
+        size, session, object);
+
+    *bn = BN_bin2bn(binary, (int)size, *bn);
+
+    pkcs11_log(ctx, LOG_DEBUG,
+        "BN_GETATTR EXIT bn=%p session=%lu object=%lu success=%d\n",
+        *bn, session, object, (*bn != NULL));
+
+    OPENSSL_free(binary);
+
+    return *bn ? 0 : -1;
 }
 
 /*
