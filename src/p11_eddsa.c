@@ -66,7 +66,7 @@ static int pkcs11_eddsa_sign(unsigned char *sigret, unsigned int *siglen,
 	memset(&mechanism, 0, sizeof(mechanism));
 	mechanism.mechanism = CKM_EDDSA;
 
-	printf("mechanism = 0x%lx\n", (unsigned long)mechanism->mechanism);
+	printf("mechanism = 0x%lx\n", CKM_EDDSA);
 	printf("Getting session");
 	if (pkcs11_get_session(slot, 0, &session))
 		return -1;
