@@ -480,7 +480,6 @@ static EVP_PKEY_METHOD *pkcs11_pkey_method_ed448(void)
 	EVP_PKEY_meth_set_sign(new_meth, NULL, pkcs11_eddsa_pmeth_sign);
 	EVP_PKEY_meth_set_digestsign(new_meth, pkcs11_pkey_ed448_digestsign);
 	EVP_PKEY_meth_set_ctrl(new_meth, pkcs11_eddsa_pmeth_ctrl, NULL);
-	EVP_PKEY_meth_set_signctx c
 
 	return new_meth;
 }
