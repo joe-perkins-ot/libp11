@@ -40,10 +40,24 @@ int pkcs11_getattr_var(PKCS11_CTX_private *ctx, CK_SESSION_HANDLE session,
 	CK_ATTRIBUTE templ;
 	int rv;
 
+	pkcs11_log(ctx, LOG_INFO,
+        "C_GetAttributeValue REQUEST session=%lu object=%lu type=%lu size=%zu\n",
+        (unsigned long)session,
+        (unsigned long)object,
+        (unsigned long)type,
+        *size);
+
 	templ.type = type;
 	templ.pValue = value;
 	templ.ulValueLen = (CK_ULONG)*size;
 	rv = CRYPTOKI_call(ctx, C_GetAttributeValue(session, object, &templ, 1));
+
+
+	pkcs11_log(ctx, LOG_INFO,
+        "C_GetAttributeValue RESULT rv=0x%lx returned_len=%lu\n",
+        rv,
+        templ.ulValueLen);
+
 	CRYPTOKI_checkerr(CKR_F_PKCS11_GETATTR_INT, rv);
 	*size = templ.ulValueLen;
 	return 0;
