@@ -108,18 +108,18 @@ int pkcs11_getattr_bn(PKCS11_CTX_private *ctx,
 
     size = 0;
 
-    pkcs11_log(ctx, LOG_DEBUG,
+    pkcs11_log(ctx, LOG_INFO,
         "BN_GETATTR ENTER session=%lu object=%lu type=0x%lx bn=%p\n",
         session, object, type, bn);
 
     rv = pkcs11_getattr_alloc(ctx, session, object, type, &binary, &size);
 
-    pkcs11_log(ctx, LOG_DEBUG,
+    pkcs11_log(ctx, LOG_INFO,
         "BN_GETATTR RAW RESULT rv=%d session=%lu object=%lu type=0x%lx size=%zu ptr=%p\n",
         rv, session, object, type, size, binary);
 
     if (rv) {
-        pkcs11_log(ctx, LOG_DEBUG,
+        pkcs11_log(ctx, LOG_INFO,
             "BN_GETATTR FAIL early-return session=%lu object=%lu type=0x%lx rv=%d\n",
             session, object, type, rv);
         return -1;
@@ -127,7 +127,7 @@ int pkcs11_getattr_bn(PKCS11_CTX_private *ctx,
 
     /* IMPORTANT: detect PKCS#11-style "invalid attribute" sentinel */
     if (size == (size_t)-1) {
-        pkcs11_log(ctx, LOG_DEBUG,
+        pkcs11_log(ctx, LOG_INFO,
             "BN_GETATTR CKR_ATTRIBUTE_TYPE_INVALID session=%lu object=%lu type=0x%lx\n",
             session, object, type);
 
@@ -136,13 +136,13 @@ int pkcs11_getattr_bn(PKCS11_CTX_private *ctx,
         return -1;
     }
 
-    pkcs11_log(ctx, LOG_DEBUG,
+    pkcs11_log(ctx, LOG_INFO,
         "BN_GETATTR CONVERT BN_bin2bn size=%zu session=%lu object=%lu\n",
         size, session, object);
 
     *bn = BN_bin2bn(binary, (int)size, *bn);
 
-    pkcs11_log(ctx, LOG_DEBUG,
+    pkcs11_log(ctx, LOG_INFO,
         "BN_GETATTR EXIT bn=%p session=%lu object=%lu success=%d\n",
         *bn, session, object, (*bn != NULL));
 
