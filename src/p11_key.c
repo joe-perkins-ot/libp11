@@ -836,7 +836,7 @@ int pkcs11_authenticate(PKCS11_OBJECT_private *key, CK_SESSION_HANDLE session)
 int pkcs11_enumerate_keys(PKCS11_SLOT_private *slot, unsigned int type, const PKCS11_KEY *key_template,
 		PKCS11_KEY **keyp, unsigned int *countp)
 {
-	pkcs11_destroy_keys(slot, type);
+	// pkcs11_destroy_keys(slot, type);
 	PKCS11_keys *keys = (type == CKO_PRIVATE_KEY) ? &slot->prv : &slot->pub;
 	PKCS11_TEMPLATE tmpl = {0};
 	CK_SESSION_HANDLE session;

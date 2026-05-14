@@ -149,7 +149,7 @@ int pkcs11_getattr_bn(PKCS11_CTX_private *ctx,
     OPENSSL_free(binary);
 
     return *bn ? 0 : -1;
-}
+}		
 
 /*
  * Add attributes to template
