@@ -140,8 +140,13 @@ extern PKCS11_OBJECT_ops pkcs11_ed448_ops;
 			return -1; \
 		} \
 	} while (0)
-#define CRYPTOKI_call(ctx, func_and_args) \
-	ctx->method->func_and_args
+#define CRYPTOKI_call(ctx, call) \
+({ \
+    CK_RV _rv = (ctx)->method->call; \
+    printf(">>> PKCS11 CALL: %s\n", #call); \
+    printf("<<< PKCS11 RET : 0x%lx\n", (unsigned long)_rv); \
+    _rv; \
+})
 extern int ERR_load_CKR_strings(void);
 
 /* Memory allocation */

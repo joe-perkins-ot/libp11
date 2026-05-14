@@ -764,6 +764,7 @@ static int store_load(void *ctx, OSSL_CALLBACK *object_cb, void *object_cbarg,
 			if (key != NULL) {
 				/* Workaround for EVP_PKEY without key management, needed since
 				 * ossl_store_handle_load_result() doesn't support this case. */
+				printf("Loading new pkey\n");
 				cbdata->v = OSSL_STORE_INFO_new_PKEY(key);
 				return 1;
 			}
