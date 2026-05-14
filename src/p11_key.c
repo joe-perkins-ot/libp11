@@ -924,7 +924,6 @@ static int pkcs11_next_key(PKCS11_CTX_private *ctx, PKCS11_SLOT_private *slot,
 	/* Get the next matching object */
 	rv = CRYPTOKI_call(ctx, C_FindObjects(session, &obj, 1, &count));
 	printf("NEXT KEYS\n");
-
 	CRYPTOKI_checkerr(CKR_F_PKCS11_NEXT_KEY, rv);
 
 	if (count == 0)

@@ -47,6 +47,7 @@ int pkcs11_enumerate_slots(PKCS11_CTX_private *ctx, PKCS11_SLOT **slotp,
 	int rv;
 
 	rv = ctx->method->C_GetSlotList(FALSE, NULL_PTR, &nslots);
+	printf("ENUM SLOTS\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_ENUMERATE_SLOTS, rv);
 	if (nslots > 0x10000)
 		return -1;
@@ -64,6 +65,7 @@ int pkcs11_enumerate_slots(PKCS11_CTX_private *ctx, PKCS11_SLOT **slotp,
 	rv = ctx->method->C_GetSlotList(FALSE, slotid, &nslots);
 	if (rv != CKR_OK) {
 		OPENSSL_free(slotid);
+		printf("ENUM SLOTS 2\n");
 		CRYPTOKI_checkerr(CKR_F_PKCS11_ENUMERATE_SLOTS, rv);
 	}
 
@@ -241,6 +243,7 @@ int pkcs11_login(PKCS11_SLOT_private *slot, int so, const char *pin)
 	pkcs11_put_session(slot, session);
 
 	if (rv && rv != CKR_USER_ALREADY_LOGGED_IN) { /* logged in -> OK */
+		printf("LOGIN\n");
 		CRYPTOKI_checkerr(CKR_F_PKCS11_LOGIN, rv);
 	}
 	if (slot->prev_pin != pin) {
@@ -289,6 +292,7 @@ int pkcs11_logout(PKCS11_SLOT_private *slot)
 		rv = CRYPTOKI_call(ctx, C_Logout(session));
 		pkcs11_put_session(slot, session);
 	}
+	printf("LOGOUT\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_LOGOUT, rv);
 	slot->logged_in = -1;
 	return 0;
@@ -316,6 +320,7 @@ int pkcs11_init_token(PKCS11_SLOT_private *slot, const char *pin, const char *la
 		C_InitToken(slot->id,
 			(CK_UTF8CHAR *) pin, (unsigned long) strlen(pin),
 			(CK_UTF8CHAR *) ck_label));
+	printf("INIT token\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_INIT_TOKEN, rv);
 
 	/* FIXME: how to update the token? */
@@ -350,6 +355,8 @@ int pkcs11_init_pin(PKCS11_SLOT_private *slot, const char *pin)
 	len = pin ? (int) strlen(pin) : 0;
 	rv = CRYPTOKI_call(ctx, C_InitPIN(session, (CK_UTF8CHAR *) pin, len));
 	pkcs11_put_session(slot, session);
+		printf("INIT pin\n");
+
 	CRYPTOKI_checkerr(CKR_F_PKCS11_INIT_PIN, rv);
 
 	return 0;
@@ -376,6 +383,7 @@ int pkcs11_change_pin(PKCS11_SLOT_private *slot, const char *old_pin,
 		C_SetPIN(session, (CK_UTF8CHAR *) old_pin, old_len,
 			(CK_UTF8CHAR *) new_pin, new_len));
 	pkcs11_put_session(slot, session);
+	printf("CHANGE PIN\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_CHANGE_PIN, rv);
 
 	return 0;
@@ -399,6 +407,7 @@ int pkcs11_seed_random(PKCS11_SLOT_private *slot, const unsigned char *s,
 	rv = CRYPTOKI_call(ctx,
 		C_SeedRandom(session, (CK_BYTE_PTR) s, s_len));
 	pkcs11_put_session(slot, session);
+	printf("SEED RANDOM\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_SEED_RANDOM, rv);
 
 	return 0;
@@ -423,6 +432,7 @@ int pkcs11_generate_random(PKCS11_SLOT_private *slot, unsigned char *r,
 		C_GenerateRandom(session, (CK_BYTE_PTR) r, r_len));
 	pkcs11_put_session(slot, session);
 
+	printf("GEN RANDOM\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_GENERATE_RANDOM, rv);
 
 	return 0;
@@ -483,6 +493,7 @@ static int pkcs11_init_slot(PKCS11_CTX_private *ctx, PKCS11_SLOT *slot, PKCS11_S
 	int rv;
 
 	rv = CRYPTOKI_call(ctx, C_GetSlotInfo(spriv->id, &info));
+	printf("INIT SLOT\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_INIT_SLOT, rv);
 
 	slot->_private = spriv;
@@ -541,6 +552,7 @@ int pkcs11_refresh_token(PKCS11_SLOT *slot)
 		slot->token = NULL;
 		return 0;
 	}
+	printf("CHECK TOKEN\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_CHECK_TOKEN, rv);
 
 	/* We have a token */
