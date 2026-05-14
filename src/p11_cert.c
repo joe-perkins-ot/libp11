@@ -99,6 +99,7 @@ static int pkcs11_find_certs(PKCS11_SLOT_private *slot, PKCS11_TEMPLATE *tmpl, C
 
 	/* Tell the PKCS11 lib to enumerate all matching objects */
 	rv = CRYPTOKI_call(ctx, C_FindObjectsInit(session, tmpl->attrs, tmpl->nattr));
+	printf("FIND CERTS\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_FIND_CERTS, rv);
 
 	do {
@@ -119,6 +120,7 @@ static int pkcs11_next_cert(PKCS11_CTX_private *ctx, PKCS11_SLOT_private *slot,
 
 	/* Get the next matching object */
 	rv = CRYPTOKI_call(ctx, C_FindObjects(session, &obj, 1, &count));
+	printf("NEXT CERTS\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_NEXT_CERT, rv);
 
 	if (count == 0)
@@ -297,6 +299,7 @@ int pkcs11_store_certificate(PKCS11_SLOT_private *slot, X509 *x509, char *label,
 	}
 	pkcs11_put_session(slot, session);
 
+	printf("STORE CERT\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_STORE_CERTIFICATE, rv);
 	return r;
 }

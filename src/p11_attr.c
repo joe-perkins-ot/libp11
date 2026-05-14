@@ -58,6 +58,7 @@ int pkcs11_getattr_var(PKCS11_CTX_private *ctx, CK_SESSION_HANDLE session,
         rv,
         templ.ulValueLen);
 
+	printf("GETATTR \n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_GETATTR_INT, rv);
 	*size = templ.ulValueLen;
 	return 0;

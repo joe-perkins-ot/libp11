@@ -375,6 +375,7 @@ int pkcs11_reload_object(PKCS11_OBJECT_private *obj)
 	pkcs11_put_session(slot, session);
 
 	if (obj->object == CK_INVALID_HANDLE)
+		printf("INVALID HANDLE RELOAD KEY\n");
 		CRYPTOKI_checkerr(CKR_F_PKCS11_RELOAD_KEY, CKR_OBJECT_HANDLE_INVALID);
 
 	return 0;
@@ -425,6 +426,7 @@ int pkcs11_rsa_keygen(PKCS11_SLOT_private *slot, unsigned int bits,
 	pkcs11_zap_attrs(&privtmpl);
 	pkcs11_zap_attrs(&pubtmpl);
 
+	printf("GEN KEY\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_GENERATE_KEY, rv);
 
 	return 0;
@@ -505,6 +507,7 @@ int pkcs11_ec_keygen(PKCS11_SLOT_private *slot, const char *curve,
 	pkcs11_zap_attrs(&pubtmpl);
 	memset(ec_params, 0, ec_params_len);
 	OPENSSL_free(ec_params);
+	printf("GEN KEY2\n");
 
 	CRYPTOKI_checkerr(CKR_F_PKCS11_GENERATE_KEY, rv);
 	return 0;
@@ -562,7 +565,7 @@ int pkcs11_eddsa_keygen(PKCS11_SLOT_private *slot,
 	/* cleanup */
 	pkcs11_zap_attrs(&privtmpl);
 	pkcs11_zap_attrs(&pubtmpl);
-
+	printf("GEN KEY3\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_GENERATE_KEY, rv);
 	return 0;
 }
@@ -676,6 +679,7 @@ static int pkcs11_store_key(PKCS11_SLOT_private *slot, EVP_PKEY *pk,
 		r = pkcs11_init_key(slot, session, object, type, ret_key);
 	}
 	pkcs11_put_session(slot, session);
+	printf("STORE KEY\n");
 
 	CRYPTOKI_checkerr(CKR_F_PKCS11_STORE_KEY, rv);
 	return r;
@@ -882,8 +886,8 @@ int pkcs11_remove_object(PKCS11_OBJECT_private *obj)
 
 	rv = CRYPTOKI_call(ctx, C_DestroyObject(session, obj->object));
 	pkcs11_put_session(slot, session);
+	printf("REMOVE KEY\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_REMOVE_KEY, rv);
-
 	return 0;
 }
 
@@ -898,6 +902,7 @@ static int pkcs11_find_keys(PKCS11_SLOT_private *slot, CK_SESSION_HANDLE session
 	/* Tell the PKCS11 lib to enumerate all matching objects */
 	rv = CRYPTOKI_call(ctx,
 		C_FindObjectsInit(session, tmpl->attrs, tmpl->nattr));
+	printf("FIND KEYS\n");
 	CRYPTOKI_checkerr(CKR_F_PKCS11_FIND_KEYS, rv);
 
 	do {
@@ -918,6 +923,8 @@ static int pkcs11_next_key(PKCS11_CTX_private *ctx, PKCS11_SLOT_private *slot,
 
 	/* Get the next matching object */
 	rv = CRYPTOKI_call(ctx, C_FindObjects(session, &obj, 1, &count));
+	printf("NEXT KEYS\n");
+
 	CRYPTOKI_checkerr(CKR_F_PKCS11_NEXT_KEY, rv);
 
 	if (count == 0)
