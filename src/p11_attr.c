@@ -108,6 +108,7 @@ int pkcs11_getattr_bn(PKCS11_CTX_private *ctx,
     int rv;
 
     size = 0;
+	printf("GETATTR BN\n");
 
     pkcs11_log(ctx, LOG_INFO,
         "BN_GETATTR ENTER session=%lu object=%lu type=0x%lx bn=%p\n",
@@ -131,7 +132,7 @@ int pkcs11_getattr_bn(PKCS11_CTX_private *ctx,
         pkcs11_log(ctx, LOG_INFO,
             "BN_GETATTR CKR_ATTRIBUTE_TYPE_INVALID session=%lu object=%lu type=0x%lx\n",
             session, object, type);
-
+		printf("GETATTR BN fail\n");
         CKRerr(CKR_F_PKCS11_GETATTR_BN, CKR_ATTRIBUTE_TYPE_INVALID);
         OPENSSL_free(binary);
         return -1;

@@ -79,6 +79,7 @@ static int pkcs11_eddsa_sign(unsigned char *sigret, unsigned int *siglen,
 	pkcs11_put_session(slot, session);
 
 	if (rv) {
+		printf("EDDSA SIGN FAIl\n");
 		CKRerr(CKR_F_PKCS11_EDDSA_SIGN, rv);
 		return -1;
 	}

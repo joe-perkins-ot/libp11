@@ -445,6 +445,7 @@ static int pkcs11_ecdsa_sign(const unsigned char *msg, unsigned int msg_len,
 	pkcs11_put_session(slot, session);
 
 	if (rv) {
+		printf("ECDSA SIGN\n");
 		CKRerr(CKR_F_PKCS11_ECDSA_SIGN, rv);
 		return -1;
 	}

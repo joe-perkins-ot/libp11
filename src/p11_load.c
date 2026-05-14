@@ -110,6 +110,7 @@ static int pkcs11_initialize(PKCS11_CTX_private *cpriv)
 	rv = cpriv->method->C_Initialize(&args);
 	if (rv && rv != CKR_CRYPTOKI_ALREADY_INITIALIZED) {
 		cpriv->initialized = 0;
+		printf("INIT \n");
 		CKRerr(P11_F_PKCS11_CTX_LOAD, rv);
 		return -1;
 	}
@@ -142,6 +143,8 @@ int pkcs11_CTX_load(PKCS11_CTX *ctx, const char *name)
 	rv = cpriv->method->C_GetInfo(&ck_info);
 	if (rv) {
 		pkcs11_CTX_unload(ctx);
+		printf("INIT 2 \n");
+
 		CKRerr(P11_F_PKCS11_CTX_LOAD, rv);
 		return -1;
 	}
